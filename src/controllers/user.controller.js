@@ -17,7 +17,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
         return { accessToken, refreshToken };
 
     } catch (error) {
-        throw new ApiError(500, "Error while generating tokens");
+        throw new ApiError(500, error?.message || "Something went wrong while generating refresh and access token");
 
     }
 }
@@ -94,7 +94,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
 
     const { username, password, email } = req.body;
 
-    if (!email || !username) {
+    if (!email && !username) {
         throw new ApiError(400, "Email or username is required");
     }
 
@@ -106,9 +106,9 @@ const loginUser = asyncHandler(async (req, res, next) => {
         throw new ApiError(404, "User not found");
     }
 
-    const isPasswordCorrect = await user.isPasswordCorrect(password);
+    const isPasswordValid = await user.isPasswordcorrect(password);
 
-    if (!isPasswordCorrect) {
+    if (!isPasswordValid) {
         throw new ApiError(401, "Invalid password");
     }
 
@@ -118,7 +118,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
 
     const options = {
         httpOnly: true,
-        secure: true
+        secure: true,
     };
 
     return res.status(200)
