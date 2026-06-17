@@ -10,7 +10,6 @@ const generateAccessAndRefreshTokens = async (userId) => {
         const user = await User.findById(userId);
         const accessToken = user.generateAccessToken();
         const refreshToken = user.generateRefreshToken();
-
         user.refreshToken = refreshToken;
         user.save({ validateBeforeSave: false });
 
@@ -78,7 +77,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
     }
 
     return res.status(201).json(
-        new ApiResponse(createdUser, "User created successfully", 200)
+        new ApiResponse(200, createdUser, "User created successfully")
     );
 
 
@@ -126,11 +125,13 @@ const loginUser = asyncHandler(async (req, res, next) => {
         .cookie("accessToken", accessToken, options)
         .json(
             new ApiResponse(
+                200,
                 {
-                    user: loggedInUser, accessToken, refreshToken
+                    user: loggedInUser,
+                    accessToken,
+                    refreshToken
                 },
-                "User logged in successfully",
-                200
+                "User logged in successfully"
             )
         )
 
@@ -139,7 +140,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
 
 
 const logoutUser = asyncHandler(async (req, res, next) => {
-    await User.findByIdAndUpdate(req.user._id, 
+    await User.findByIdAndUpdate(req.user._id,
         {
             $set: {
                 refreshToken: undefined
@@ -155,9 +156,9 @@ const logoutUser = asyncHandler(async (req, res, next) => {
         secure: true
     };
     return res.status(200)
-        .cookie("refreshToken", "", { ... options, expires: new Date(0)})
-        .cookie("accessToken", "", { ... options, expires: new Date(0)})
-        .json(new ApiResponse({}, "User logged out successfully", 200))
+        .cookie("refreshToken", "", { ...options, expires: new Date(0) })
+        .cookie("accessToken", "", { ...options, expires: new Date(0) })
+        .json(new ApiResponse(200, {}, "User logged out successfully"));
 
 
 
