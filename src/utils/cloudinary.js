@@ -27,4 +27,8 @@ const uploadOnCloudinary = async (localFilePath) => {
     }
 }
 
+const deleteImage = async(file) => {
+    
+}
+
 export { uploadOnCloudinary };
